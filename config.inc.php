@@ -3,8 +3,8 @@
     // These variables define the connection information for your MySQL database 
 	$host = "localhost"; 
 	$dbname = "wallet";     
-	$username = "walletApp"; 
-    $password = "asdf"; 
+	$username = "root"; 
+    $password = ""; 
     
     
 

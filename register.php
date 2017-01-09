@@ -91,7 +91,7 @@ if (!empty($_POST)) {
         
         //or just use this use this one:
         $response["success"] = 0;
-        $response["message"] = "Database Error2. Please Try Again!";
+        $response["message"] = $ex->getMessage();
         die(json_encode($response));
     }
     
@@ -111,7 +111,17 @@ if (!empty($_POST)) {
     
 } else {
 ?>
-
+		<h1>Register</h1> 
+		<form action="register.php" method="post"> 
+		    Username:<br /> 
+		    <input type="text" name="name" placeholder="username" /> 
+		    <br /><br /> 
+		    Password:<br /> 
+		    <input type="password" name="password" placeholder="password" value="" /> 
+		    <br /><br /> 
+		    <input type="submit" value="Register" /> 
+		</form> 
+		<a href="Login.php">Login</a>
 	<?php
 }
 
