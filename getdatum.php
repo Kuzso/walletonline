@@ -39,7 +39,7 @@ if (mysql_num_rows($result) > 0) {
 } else {
     // no products found
     $response["success"] = 0;
-    $response["message"] = "No products found";
+    $response["message"] = "No values found";
  
     // echo no users JSON
     echo json_encode($response);

@@ -2,9 +2,9 @@
 
     // These variables define the connection information for your MySQL database 
 	$host = "localhost"; 
-	$dbname = "elosztottminta";     
-	$username = "kzs"; 
-    $password = ""; 
+	$dbname = "wallet";     
+	$username = "walletApp"; 
+    $password = "asdf"; 
     
     
 
