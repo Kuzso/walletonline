@@ -1,28 +1,49 @@
 <?php
  
+//load and connect to MySQL database stuff
+require("config.inc.php");
+ 
 /*
  * Following code will list all the products
  */
- 
+if (!empty($_POST)) {
 // array for JSON response
 $response = array();
- 
-// include db connect class
-require_once __DIR__ . '/db_connect.php';
- 
-// connecting to db
-$db = new DB_CONNECT();
- 
-// get all products from products table
-$result = mysql_query("SELECT DISTINCT `yearmonth` FROM `inout` WHERE `uid`='".$_POST['uid']."'") or die(mysql_error());
+
+$query = "
+          SELECT DISTINCT 
+            `yearmonth` 
+          FROM  `inout` 
+          WHERE `uid` = :uid
+         ";
+    
+    $query_params = array(
+        ':uid' => $_POST['uid']
+    );
+    
+    try {
+        $stmt   = $db->prepare($query);
+        $result = $stmt->execute($query_params);
+    }
+    catch (PDOException $ex) {
+        // For testing, you could use a die and message. 
+        //die("Failed to run query: " . $ex->getMessage());
+        
+        //or just use this use this one to product JSON data:
+        $response["success"] = 0;
+        $response["message"] = $ex->getMessage();
+        die(json_encode($response));
+        
+    }
  
 // check for empty result
-if (mysql_num_rows($result) > 0) {
+if ($result) {
     // looping through all results
     // products node
     $response["products"] = array();
+    //fetching all the rows from the query
+    $row = $stmt->fetch();
  
-    while ($row = mysql_fetch_array($result)) {
         // temp user array
         $product = array();
        // $product["pid"] = $row["id"];
@@ -30,7 +51,6 @@ if (mysql_num_rows($result) > 0) {
  
         // push single product into final response array
         array_push($response["products"], $product);
-    }
     // success
     $response["success"] = 1;
  
@@ -43,5 +63,20 @@ if (mysql_num_rows($result) > 0) {
  
     // echo no users JSON
     echo json_encode($response);
+}
+} else {
+  
+  ?>
+		<h1>Test data</h1> 
+		<form action="getdatum.php" method="post"> 
+		    User id:<br /> 
+		    <input type="text" name="uid" placeholder="User id" /> 
+		    <br /><br /> 
+		    <input type="submit" value="Get Data" /> 
+		</form> 
+    <a href="login.php">Login</a>
+		<a href="register.php">Register</a>
+	<?php
+  
 }
 ?>
