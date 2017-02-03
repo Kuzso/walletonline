@@ -4,26 +4,46 @@
  * Following code will list all the products
  */
  
+//load and connect to MySQL database stuff
+require("config.inc.php");
+
+if (!empty($_POST)) {
 // array for JSON response
 $response = array();
  
-// include db connect class
-require_once __DIR__ . '/db_connect.php';
- 
-// connecting to db
-$db = new DB_CONNECT();
- 
 // get all products from products table
-$result = mysql_query("SELECT `osszeg`, `befizetes` FROM `inout` WHERE `uid`='".$_POST['uid']."' and `pnem`='".$_POST['pnem']."'") or die(mysql_error());
+$query = "SELECT `osszeg`, `befizetes` 
+           FROM `inout` 
+           WHERE `uid`= :uid
+             and `pnem`= :pnem";
+ 
+$query_params = array(
+                  ':uid' => $_POST['uid'],
+                  ':pnem' => $_POST['pnem']
+                );
+    
+    try {
+        $stmt   = $db->prepare($query);
+        $result = $stmt->execute($query_params);
+    }
+    catch (PDOException $ex) {
+        // For testing, you could use a die and message. 
+        //die("Failed to run query: " . $ex->getMessage());
+        
+        //or just use this use this one to product JSON data:
+        $response["success"] = 0;
+        $response["message"] = $ex->getMessage();
+        die(json_encode($response));
+    }
  
 // check for empty result
-if (mysql_num_rows($result) > 0) {
+if ($result) {
     // looping through all results
     // products node
     $response["products"] = array();
     $mny = 0;
  
-    while ($row = mysql_fetch_array($result)) {
+    while ($row = $stmt->fetch()) {
         if ($row['befizetes']=="1"){
         $mny=$mny+intval($row['osszeg']);
         } else {
@@ -43,5 +63,19 @@ if (mysql_num_rows($result) > 0) {
  
     // echo no users JSON
     echo json_encode($response);
+}    
+} else {
+  ?>
+		<h1>Test data</h1> 
+		<form action="getmoney.php" method="post"> 
+		    User id:<br /> 
+		    <input type="text" name="uid" placeholder="User id" /> 
+        <br />
+        Currency:<br /> 
+        <input type="text" name="pnem" placeholder="Currency" /> 
+		    <br /><br /> 
+		    <input type="submit" value="Get Data" /> 
+		</form>
+	<?php
 }
 ?>

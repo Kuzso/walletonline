@@ -42,15 +42,16 @@ if ($result) {
     // products node
     $response["products"] = array();
     //fetching all the rows from the query
-    $row = $stmt->fetch();
- 
+    while ($row = $stmt->fetch()) {
+        
         // temp user array
         $product = array();
-       // $product["pid"] = $row["id"];
+        
         $product["name"] = $row["yearmonth"];
- 
+        
         // push single product into final response array
-        array_push($response["products"], $product);
+          array_push($response["products"], $product);
+    }
     // success
     $response["success"] = 1;
  
